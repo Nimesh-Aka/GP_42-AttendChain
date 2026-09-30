@@ -1,0 +1,10 @@
+node_modules/
+artifacts/
+cache/
+frontend/deployment.json
+.DS_Store
+npm-debug.log*
+
+# Office temp / lock files
+~$*
+*.tmp

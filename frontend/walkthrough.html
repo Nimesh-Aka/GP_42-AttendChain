@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AttendChain — Narrated Walkthrough</title>
+    <style>
+      :root{
+        --bg:#faf8f2; --card:#fff; --line:#e9e3d2; --text:#1c1a15; --muted:#6f6a5c;
+        --gold:#c8a24b; --gold2:#e7c56a; --gold-deep:#a67c1a; --ink:#1c1a15;
+        --grad:linear-gradient(135deg,#e7c56a 0%,#c8a24b 55%,#a67c1a 100%);
+        --font:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+      }
+      *{box-sizing:border-box}
+      body{margin:0;font-family:var(--font);color:var(--text);
+        background:radial-gradient(1000px 500px at 85% -10%,rgba(231,197,106,.22),transparent 60%),var(--bg);
+        min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+      .brand{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+      .mark{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--grad);color:#2b2410}
+      .brand h1{margin:0;font-size:22px;font-weight:800}
+      .brand span{color:var(--gold-deep)}
+      .stage{width:min(860px,96vw);background:var(--card);border:1px solid var(--line);
+        border-radius:20px;box-shadow:0 24px 60px -30px rgba(90,74,30,.5);padding:40px 44px;min-height:340px;
+        display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+      .stepno{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-deep)}
+      .stage h2{font-size:34px;margin:10px 0 16px;letter-spacing:-.02em}
+      .stage p{font-size:19px;line-height:1.6;color:#33302a;margin:0 0 16px}
+      .doline{display:inline-flex;align-items:center;gap:10px;background:rgba(231,197,106,.18);
+        border:1px solid rgba(200,162,75,.4);color:var(--gold-deep);font-weight:700;font-size:15px;
+        padding:10px 16px;border-radius:12px}
+      .doline.hide{display:none}
+      .bar{position:absolute;left:0;bottom:0;height:5px;background:var(--grad);width:0;transition:width .3s}
+      .controls{display:flex;gap:12px;align-items:center;margin-top:22px;flex-wrap:wrap;justify-content:center}
+      button{font-family:var(--font);font-size:15px;font-weight:650;border:0;border-radius:12px;padding:12px 20px;cursor:pointer;
+        transition:filter .15s,transform .05s}
+      button:hover{filter:brightness(1.05)} button:active{transform:translateY(1px)}
+      .play{background:var(--grad);color:#2b2410}
+      .ghost{background:#fff;border:1px solid var(--line);color:var(--text)}
+      .count{color:var(--muted);font-size:14px;min-width:56px;text-align:center}
+      .hint{color:var(--muted);font-size:13px;margin-top:16px;text-align:center;max-width:640px}
+      @media(max-width:560px){.stage h2{font-size:26px}.stage p{font-size:17px}}
+    </style>
+  </head>
+  <body>
+    <div class="brand">
+      <span class="mark">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      </span>
+      <h1>Attend<span>Chain</span> — Walkthrough</h1>
+    </div>
+
+    <div class="stage">
+      <div class="stepno" id="stepno">Intro</div>
+      <h2 id="title">AttendChain</h2>
+      <p id="body"></p>
+      <div class="doline hide" id="doline"></div>
+      <div class="bar" id="bar"></div>
+    </div>
+
+    <div class="controls">
+      <button class="ghost" id="prev">‹ Prev</button>
+      <button class="play" id="play">▶ Play</button>
+      <button class="ghost" id="next">Next ›</button>
+      <button class="ghost" id="restart">⟳ Restart</button>
+      <span class="count" id="count">1 / 9</span>
+    </div>
+    <div class="hint">Click <b>Play</b> and turn your volume up — it narrates each step automatically.
+      To make a video: press <b>Win + G</b> (Xbox Game Bar) → Record, and capture this window with system audio.</div>
+
+    <script>
+      const slides = [
+        { no:"Introduction", title:"AttendChain", doo:"",
+          say:"Attend Chain is an attendance system built on blockchain. The rules live in a smart contract, so records cannot be faked, edited, or deleted." },
+        { no:"The problem", title:"Why we built it", doo:"",
+          say:"In normal attendance, a student can mark present for an absent friend, and registers can be edited later. Attend Chain fixes this." },
+        { no:"Step 1", title:"The class is set up", doo:"Look at the roster",
+          say:"We have three students enrolled — Alice, Bob, and Charlie — each with their own wallet, and one open class session called Blockchain 101." },
+        { no:"Step 2", title:"A student marks present", doo:"I am Alice → Session 0 → Mark present",
+          say:"Alice marks herself present. This is a transaction signed by her wallet, and it is saved on the blockchain. Attendance recorded." },
+        { no:"Step 3", title:"No double marking", doo:"Click Mark present again",
+          say:"If Alice tries to mark again, the smart contract rejects it, saying already marked. One student, one mark per session." },
+        { no:"Step 4", title:"Nobody can mark for a friend", doo:"Click the Security check button",
+          say:"Now someone who is not enrolled tries to mark. It is rejected. Because each mark is signed by that person's own wallet, you can never sign in for a friend. This stops proxy attendance." },
+        { no:"Step 5", title:"No back-dating", doo:"Teacher closes session → Bob tries to mark",
+          say:"When the teacher closes the session, it locks. If Bob tries to mark now, it is rejected, saying the session is closed. Nobody can back-date attendance." },
+        { no:"Step 6", title:"Anyone can verify", doo:"Live verification → Load session 0",
+          say:"Anyone can check the records. Here is the attendance list, with names, roll numbers, wallets, and exact times. It cannot be changed." },
+        { no:"Conclusion", title:"Trustless attendance", doo:"",
+          say:"So Attend Chain gives attendance that cannot be faked, doubled, back-dated, or edited — all enforced by the blockchain, with no central system to trust. Thank you." },
+      ];
+
+      let i = 0, playing = false, voice = null;
+      const $ = (id) => document.getElementById(id);
+
+      function pickVoice() {
+        const vs = speechSynthesis.getVoices();
+        voice = vs.find(v => /en-US/i.test(v.lang) && /female|zira|aria|jenny|samantha/i.test(v.name))
+             || vs.find(v => /^en/i.test(v.lang)) || vs[0] || null;
+      }
+      speechSynthesis.onvoiceschanged = pickVoice;
+      pickVoice();
+
+      function render() {
+        const s = slides[i];
+        $("stepno").textContent = s.no;
+        $("title").textContent = s.title;
+        $("body").textContent = s.say;
+        const d = $("doline");
+        if (s.doo) { d.textContent = "On screen:  " + s.doo; d.classList.remove("hide"); }
+        else d.classList.add("hide");
+        $("count").textContent = (i + 1) + " / " + slides.length;
+        $("bar").style.width = ((i + 1) / slides.length * 100) + "%";
+      }
+
+      function speak(then) {
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(slides[i].say);
+        if (voice) u.voice = voice;
+        u.rate = 0.98; u.pitch = 1.0;
+        u.onend = () => { if (then) then(); };
+        speechSynthesis.speak(u);
+      }
+
+      function playFrom() {
+        playing = true; $("play").textContent = "⏸ Pause";
+        render();
+        speak(() => {
+          if (!playing) return;
+          if (i < slides.length - 1) { i++; playFrom(); }
+          else { playing = false; $("play").textContent = "▶ Replay"; }
+        });
+      }
+      function pause() { playing = false; speechSynthesis.cancel(); $("play").textContent = "▶ Play"; }
+
+      $("play").onclick = () => { if (playing) pause(); else { if (i === slides.length - 1) i = 0; playFrom(); } };
+      $("next").onclick = () => { pause(); i = Math.min(i + 1, slides.length - 1); render(); speak(); };
+      $("prev").onclick = () => { pause(); i = Math.max(i - 1, 0); render(); speak(); };
+      $("restart").onclick = () => { pause(); i = 0; render(); };
+
+      render();
+    </script>
+  </body>
+</html>

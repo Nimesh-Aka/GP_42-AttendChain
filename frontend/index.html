@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AttendChain — Anti-Proxy Attendance</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- ================= TOP BAR ================= -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+          </svg>
+        </span>
+        <div class="brand-text">
+          <div class="wordmark">Attend<span>Chain</span></div>
+          <div class="brandsub">Anti-Proxy Attendance · on-chain</div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <span id="netBadge" class="netpill off"><i class="dot"></i>Not connected</span>
+        <span id="accPill" class="accpill" hidden></span>
+        <button id="connectBtn" class="btn btn-ghost">Connect Wallet</button>
+      </div>
+    </header>
+
+    <!-- ================= CONNECT / CONTROL BAR ================= -->
+    <section class="console">
+      <div class="console-inner">
+        <div class="sysgroup">
+          <span class="fieldlabel">Smart contract</span>
+          <div class="sysval mono" id="sysContract">connecting…</div>
+        </div>
+        <div class="console-div"></div>
+        <div class="sysgroup">
+          <span class="fieldlabel">Signed in as</span>
+          <div class="sysval"><span class="mono" id="account">—</span> <span class="rolechip" id="role">—</span></div>
+        </div>
+        <div class="console-div"></div>
+        <div class="sysgroup grow">
+          <span class="fieldlabel">Status</span>
+          <div class="sysval"><span id="status" class="statusline">Connecting to the network…</span></div>
+        </div>
+      </div>
+      <input id="addr" type="hidden" />
+    </section>
+
+    <!-- ================= STAT STRIP ================= -->
+    <section class="stats">
+      <div class="stat">
+        <div class="stat-num" id="statSessions">0</div>
+        <div class="stat-label">Sessions created</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="statStudents">0</div>
+        <div class="stat-label">Students registered</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="statPresent">0</div>
+        <div class="stat-label">Attendance marks</div>
+      </div>
+      <div class="stat accentstat">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Tamper-proof · immutable</div>
+      </div>
+    </section>
+
+    <!-- ================= ROLE DASHBOARD ================= -->
+    <main class="board">
+      <!-- ADMIN -->
+      <section class="panel">
+        <div class="panel-head">
+          <span class="panel-icon ic-admin">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          </span>
+          <div>
+            <h2>Admin</h2>
+            <p>Register people to their wallet. Deployer only.</p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="subhead">Add student</div>
+          <div class="two">
+            <input id="stName" class="input" placeholder="Name (e.g. Charlie)" />
+            <input id="stRoll" class="input" placeholder="Roll no (e.g. S003)" />
+          </div>
+          <button data-act="registerStudent" class="btn btn-primary btn-wide">Add student</button>
+          <div class="note">A unique blockchain wallet is created and assigned to each student automatically — no addresses to type.</div>
+        </div>
+      </section>
+
+      <!-- TEACHER -->
+      <section class="panel">
+        <div class="panel-head">
+          <span class="panel-icon ic-teacher">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h20v14H2z"/><path d="m12 17 0 4"/><path d="M8 21h8"/><path d="m7 11 3 3 6-6"/></svg>
+          </span>
+          <div>
+            <h2>Teacher</h2>
+            <p>Open a class session, close it when time's up.</p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="subhead">Open session</div>
+          <input id="course" class="input" placeholder="Course name (e.g. Blockchain 101)" />
+          <button data-act="createSession" class="btn btn-primary btn-wide">Open new session</button>
+
+          <div class="subhead">Close session</div>
+          <div class="two">
+            <input id="closeId" class="input" type="number" min="0" placeholder="Session #" />
+            <button data-act="closeSession" class="btn btn-outline">Close session</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- STUDENT -->
+      <section class="panel highlight">
+        <div class="panel-head">
+          <span class="panel-icon ic-student">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.5 3 6 3s6-2 6-3v-5"/></svg>
+          </span>
+          <div>
+            <h2>Student</h2>
+            <p>Mark <b>your own</b> attendance — signed by your key.</p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="subhead">I am</div>
+          <select id="studentPicker" class="input select"></select>
+          <div class="two">
+            <input id="markId" class="input" type="number" min="0" placeholder="Session #" />
+            <button data-act="markAttendance" class="btn btn-accent btn-lg">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              Mark present
+            </button>
+          </div>
+          <div class="note">Marked with this student's own assigned wallet — nobody can mark for someone else.</div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ================= CLASS ROSTER ================= -->
+    <section class="verify" id="rosterSection">
+      <div class="panel-head nomargin">
+        <span class="panel-icon ic-admin">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+        <div>
+          <h2>Class roster</h2>
+          <p>Everyone enrolled on-chain — each with an automatically assigned wallet.</p>
+        </div>
+      </div>
+      <table id="rosterTable" class="attend" hidden>
+        <thead><tr><th>#</th><th>Name</th><th>Roll no</th><th>Assigned wallet</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div id="rosterEmpty" class="note"></div>
+    </section>
+
+    <!-- ================= VERIFY / LIVE BOARD ================= -->
+    <section class="verify">
+      <div class="verify-head">
+        <div class="panel-head nomargin">
+          <span class="panel-icon ic-verify">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </span>
+          <div>
+            <h2>Live verification</h2>
+            <p>Anyone can audit a session — no login required.</p>
+          </div>
+        </div>
+        <div class="inline">
+          <input id="viewId" class="input" type="number" min="0" placeholder="Session #" />
+          <button data-act="viewSession" class="btn btn-primary">Load session</button>
+          <button data-act="refresh" class="btn btn-ghost">Refresh</button>
+        </div>
+      </div>
+
+      <div id="sessionInfo" class="sessioninfo"></div>
+
+      <table id="attendTable" class="attend" hidden>
+        <thead>
+          <tr><th>#</th><th>Name</th><th>Roll</th><th>Wallet</th><th>Marked at</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="allsessions-label">All sessions</div>
+      <div id="allSessions" class="sessions"></div>
+    </section>
+
+    <footer class="foot">
+      <span>AttendChain · GP_42</span>
+      <span>Ethereum · Solidity · Hardhat · ethers.js</span>
+    </footer>
+
+    <div id="toasts" class="toasts"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.2/ethers.umd.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
