@@ -26,8 +26,8 @@ MetaMask) for enrolling students, running sessions, and verifying attendance.
 |---|---|---|
 | EG/2021/4392 | A. N. Akarshana | Smart-contract design & Solidity development (`AttendChain.sol`), core anti-proxy logic, and project integration. |
 | EG/2021/4385 | Adeesha M. G. P | Front-end web application (HTML/CSS + ethers.js UI), MetaMask integration, and user experience. |
-| EG/2021/4602 | Karunarathne S. M. G. S | Testing & security assessment (Hardhat tests + `attack.js`), Hardhat configuration, and deployment/seed scripts. |
-| EG/2021/4794 | Sellahewa I. A | Documentation (README, demo script), presentation slides, and demo video production. |
+| EG/2021/4602 | Karunarathne S. M. G. S | Testing (Hardhat test suite, `AttendChain.test.js`) and the smart-contract security assessment (`attack.js`). |
+| EG/2021/4794 | Sellahewa I. A | Deployment & network scripts (`deploy.js`, `seed.js`) and Hardhat configuration, plus documentation and presentation. |
 
 *All members contributed to design discussions, testing, and the final demonstration.*
 
