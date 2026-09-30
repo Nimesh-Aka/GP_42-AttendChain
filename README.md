@@ -69,10 +69,16 @@ The app **auto-connects to the blockchain on load** — no wallet setup needed. 
 - **Admin** adds a student with just a **name + roll no** (a wallet is auto-assigned).
 - **Teacher** opens/closes sessions.
 - **Student** marks attendance by picking their **name** in the "I am" box.
-- The **"Security check"** button proves the anti-proxy block (an unenrolled wallet is rejected).
+- Run `npm run attack` for the security assessment (real attacker transactions, all rejected).
 
-**Connect Wallet** (top-right) is optional — it switches to the visitor's own MetaMask, for a
-real multi-device deployment.
+### Using MetaMask (real-world / multi-device mode)
+Click **Connect Wallet** (top-right) to use your own MetaMask instead of the app's local connection:
+- It **automatically adds/switches** MetaMask to the local network (RPC `http://127.0.0.1:8545`, chainId `31337`).
+- Every action is **signed in MetaMask** by your connected account (`msg.sender`).
+- **Admin:** in MetaMask mode the "Add student" box shows a wallet-address field — paste the student's own address (in the real world each student owns their wallet).
+- **Student:** marking is signed by your connected wallet — the UI shows "Marking as (your wallet)".
+
+To import a test account into MetaMask for a local demo, use a private key printed by `npm run node`.
 
 ### Reset to a clean state
 ```bash

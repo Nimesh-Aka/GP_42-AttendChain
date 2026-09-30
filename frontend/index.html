@@ -89,8 +89,9 @@
             <input id="stName" class="input" placeholder="Name (e.g. Charlie)" />
             <input id="stRoll" class="input" placeholder="Roll no (e.g. S003)" />
           </div>
+          <input id="stAddr" class="input mono" placeholder="Student wallet 0x… (MetaMask mode)" hidden />
           <button data-act="registerStudent" class="btn btn-primary btn-wide">Add student</button>
-          <div class="note">A unique blockchain wallet is created and assigned to each student automatically — no addresses to type.</div>
+          <div class="note" id="adminNote">A unique blockchain wallet is created and assigned to each student automatically — no addresses to type.</div>
         </div>
       </section>
 
@@ -130,8 +131,14 @@
           </div>
         </div>
         <div class="panel-body">
-          <div class="subhead">I am</div>
-          <select id="studentPicker" class="input select"></select>
+          <div id="localPick">
+            <div class="subhead">I am</div>
+            <select id="studentPicker" class="input select"></select>
+          </div>
+          <div id="mmPick" class="mmpick" hidden>
+            <div class="subhead">Marking as (your wallet)</div>
+            <div class="input mono" id="mmAddr">—</div>
+          </div>
           <div class="two">
             <input id="markId" class="input" type="number" min="0" placeholder="Session #" />
             <button data-act="markAttendance" class="btn btn-accent btn-lg">

@@ -80,6 +80,7 @@ async function connectLocal() {
   signer = await provider.getSigner(organizerAddr);
   account = await signer.getAddress();
   setAccPill(account);
+  setWalletMode(false);
   setNet("Ethereum · chain " + net.chainId, true);
   if ($("addr").value) await loadContract();
   setStatus("Connected to the network.", "ok");
@@ -97,8 +98,23 @@ window.addEventListener("load", async () => {
 
 /* -------- optional: connect the visitor's own MetaMask wallet instead -------- */
 $("connectBtn").onclick = async function () {
-  if (!window.ethereum) { setStatus("No browser wallet found. The app already runs on the network above.", "err"); return; }
+  if (!window.ethereum) { setStatus("MetaMask not found — install the extension, then click Connect Wallet.", "err"); return; }
   try {
+    setStatus("Connecting MetaMask…", "pending");
+    // Make sure MetaMask is on the local network (chainId 31337 = 0x7A69); add it if missing.
+    try {
+      await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x7A69" }] });
+    } catch (sw) {
+      const code = sw && (sw.code || (sw.data && sw.data.originalError && sw.data.originalError.code));
+      if (code === 4902) {
+        await window.ethereum.request({ method: "wallet_addEthereumChain", params: [{
+          chainId: "0x7A69",
+          chainName: "AttendChain Local (Hardhat)",
+          rpcUrls: ["http://127.0.0.1:8545"],
+          nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+        }] });
+      }
+    }
     provider = new ethers.BrowserProvider(window.ethereum);
     await provider.send("eth_requestAccounts", []);
     signer = await provider.getSigner();
@@ -106,11 +122,23 @@ $("connectBtn").onclick = async function () {
     mode = "metamask";
     const net = await provider.getNetwork();
     setAccPill(account);
-    setNet("Wallet · chain " + net.chainId, true);
-    setStatus("Wallet connected.", "ok");
+    setNet("MetaMask · chain " + net.chainId, true);
+    setWalletMode(true);
     if ($("addr").value) await loadContract();
+    setStatus("MetaMask connected — actions will be signed by " + short(account) + ".", "ok");
   } catch (e) { setStatus(err(e), "err"); }
 };
+
+// Toggle the UI between local mode (auto-assigned wallets) and MetaMask mode.
+function setWalletMode(mm) {
+  $("stAddr").hidden = !mm;
+  $("localPick").hidden = mm;
+  $("mmPick").hidden = !mm;
+  $("adminNote").textContent = mm
+    ? "MetaMask mode: paste the student's own wallet address (they hold their key)."
+    : "A unique blockchain wallet is created and assigned to each student automatically — no addresses to type.";
+  if (mm && account) $("mmAddr").textContent = account;
+}
 
 /* ---------------------------------------------------------------- Contract */
 async function loadContract() {
@@ -150,9 +178,16 @@ async function handle(act) {
       const name = $("stName").value.trim();
       const roll = $("stRoll").value.trim();
       if (!name || !roll) throw new Error("Enter the student's name and roll no.");
-      const addr = await nextFreeWallet();
-      await tx(contract.registerStudent(addr, name, roll), name + " added — wallet " + short(addr) + " assigned.");
-      $("stName").value = $("stRoll").value = "";
+      const typed = $("stAddr").value.trim();
+      let addr;
+      if (typed) {
+        if (!ethers.isAddress(typed)) throw new Error("Enter a valid wallet address.");
+        addr = typed;
+      } else {
+        addr = await nextFreeWallet();
+      }
+      await tx(contract.registerStudent(addr, name, roll), name + " added — wallet " + short(addr));
+      $("stName").value = $("stRoll").value = $("stAddr").value = "";
     } else if (act === "createSession") {
       await tx(contract.createSession($("course").value.trim()), "Session opened.");
       $("course").value = "";
